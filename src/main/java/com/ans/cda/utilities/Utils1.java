@@ -89,6 +89,18 @@ public final class Utils1 {
 		imgView.setFitHeight(20);
 		return imgView;
 	}
+	
+	/**
+	 * imageView
+	 * 
+	 * @return
+	 */
+	public static ImageView imageView50() {
+		final ImageView imgView = new ImageView(Constant.CDAFILE);
+		imgView.setFitWidth(20);
+		imgView.setFitHeight(20);
+		return imgView;
+	}
 
 	/**
 	 * imageView
