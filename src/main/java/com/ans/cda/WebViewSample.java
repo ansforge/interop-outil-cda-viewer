@@ -165,7 +165,6 @@ public class WebViewSample extends Application {
 	 * webEngine
 	 */
 	private final WebEngine webEngine = browserEngine.getEngine();
-
 	/**
 	 * outputFileName
 	 */
@@ -1761,6 +1760,12 @@ public class WebViewSample extends Application {
 			final ImageView imgView5 = Utils1.imageView5();
 			menuItem4.setGraphic(imgView5);
 
+			final Menu subMenuCda = INUtility2.menuForKey("menu.cda.version");
+			final MenuItem menuItem16 = INUtility2.menuBarForKey("menu.cda.version.bascule");
+			final ImageView imgView18 = Utils1.imageView50();
+			menuItem16.setGraphic(imgView18);
+			Utilities4.getItemsMenu(subMenuCda).add(menuItem16);
+
 			Utilities4.getItemsMenu(menu1).add(subMenu);
 			Utilities4.getItemsMenu(menu1).add(menuItem4);
 
@@ -1781,7 +1786,7 @@ public class WebViewSample extends Application {
 			menuItem7.setGraphic(imgView7);
 
 			Utilities4.getItemsMenu(menu3).add(menuItem7);
-			Utilities4.getMenu(menuBar).addAll(menu, menu1, menu3, menu2);
+			Utilities4.getMenu(menuBar).addAll(menu, menu1, subMenuCda, menu3, menu2);
 			menuBar.setDisable(true);
 			menuBar.getStylesheets().add(getClass().getResource(Constant.CSS).toExternalForm());
 
@@ -2011,6 +2016,180 @@ public class WebViewSample extends Application {
 					stage.setFullScreen(true);
 				}
 			});
+
+			subMenuCda.setOnAction(new EventHandler<>() {
+				@Override
+				public void handle(final ActionEvent event) {
+					// Path to the original XSLT file
+					String inputFilePath = textFieldxsl.getText();
+					try {
+						final Path tempFilePath = replaceBodySection(inputFilePath);
+						// call progress bar
+						runTask(taskUpdateStage, progress);
+						Platform.runLater(() -> {
+							// create temp html file
+							Path file1;
+							List<File> lfiles;
+							File file = null;
+							byte[] decoder;
+							Element image;
+							String name;
+							final Path stream;
+							try {
+								file1 = Files.createTempFile(null, Constant.HTMLEXT);
+								if (radio2.isSelected()) {
+									stream = Utilities6.transform(tempFilePath.toString(), tmpFile.getAbsolutePath(),
+											file1);
+								} else {
+									stream = Utilities6.transform(tempFilePath.toString(), textField.getText(), file1);
+								}
+								// Writes a string to the above temporary file
+								final File url1 = new File(stream.toString());
+								outputFileName = url1.getAbsolutePath();
+								Utilities6.load(webEngine, url1.toURI().toString());
+								browserEngine.prefHeightProperty().bind(stage.heightProperty());
+								browserEngine.prefWidthProperty().bind(stage.widthProperty());
+								if (radio2.isSelected()) {
+									map.put(stream.toString(), tmpFile.getAbsolutePath());
+								} else {
+									map.put(stream.toString(), textField.getText());
+								}
+
+								mapXsl.put(stream.toString(), tempFilePath.toString());
+								// Start DATAMATRIX
+								final InputStream targetStream = Files.newInputStream(Paths.get(url1.toURI()));
+								final Document doc = Jsoup.parse(targetStream, Constant.UTF8, "");
+								// Get Element datamatrix for make some changes
+								final Collection<Element> contents = doc.getElementsByClass("barcodeStyle");
+								for (final Element content : contents) {
+									if (content != null) {
+										final String dataMatrixValue = content.val();
+										if (dataMatrixValue != null && !dataMatrixValue.isEmpty()) {
+											final Map<EncodeHintType, Object> hints = new HashMap<>();
+											hints.put(EncodeHintType.DATA_MATRIX_SHAPE, SymbolShapeHint.FORCE_SQUARE);
+											// Generate the DataMatrix barcode
+											final BitMatrix matrix = new MultiFormatWriter().encode(dataMatrixValue,
+													BarcodeFormat.DATA_MATRIX, 200, 200, hints);
+
+											// Define the output file path
+											final Path path = Files.createTempFile(null, Constant.PNGEXT);
+											// Save the barcode image as PNG
+											MatrixToImageWriter.writeToPath(matrix, "PNG", path);
+											final Element img = Utilities2.getElement(path);
+											content.appendChild(img);
+											content.val("");
+											content.attr("style", "padding:0px 35px;");
+
+										}
+									}
+								}
+								// FIN DATAMATRIX
+								// Start PDF
+								final Collection<Element> iframes = doc.select("iframe,object");
+								int jCounter = 0;
+								for (final Element iframeChild : iframes) {
+									if (iframeChild != null) {
+										final String source = iframeChild.attr(Constant.SRC);
+										final String source1 = iframeChild.attr(Constant.DATA);
+										final String find = Constant.B64;
+										final boolean isFound = source.contains(Constant.B64);
+										final boolean isFound1 = source1.contains(Constant.B64);
+										int index = 0;
+										String str1 = null;
+										if (isFound) {
+											index = source.indexOf(find);
+											str1 = source.substring(index + 7);
+										}
+										if (isFound1) {
+											index = source1.indexOf(find);
+											str1 = source1.substring(index + 7);
+										}
+										if (isFound || isFound1) {
+											if (index > 0) {
+												if (str1.contains(Constant.SPC1)) {
+													str1 = str1.replaceAll(Constant.SPC1, "");
+												}
+												if (str1.contains(Constant.SPC2)) {
+													str1 = str1.replaceAll(Constant.SPC2, "");
+												}
+												final String b64 = str1.replaceAll(" ", "");
+												file = File.createTempFile("tmp", Constant.PDFEXT);
+												if (file.exists()) {
+													file.delete();
+												}
+												file = File.createTempFile("tmp", Constant.PDFEXT);
+												try (OutputStream fos = Files
+														.newOutputStream(Paths.get(file.toURI()))) {
+													decoder = Base64.getDecoder().decode(b64);
+													fos.write(decoder);
+												}
+												final String nom = iframeChild.attr(Constant.NAME);
+												final String ident = iframeChild.attr(Constant.IDENTIFIANT);
+												String fileName;
+												final int length = ident.length();
+												final int lengthName = nom.length();
+												if (length > 0) {
+													fileName = ident;
+												} else if (length == 0 && lengthName > 0) {
+													fileName = nom;
+												} else {
+													fileName = "Document" + jCounter;
+												}
+												if (Utilities.getFile(file.getParentFile() + "\\" + fileName + ".pdf")
+														.exists()) {
+													Utilities.getFile(file.getParentFile() + "\\" + fileName + ".pdf")
+															.delete();
+												}
+												final String path = file.getParentFile() + "\\" + fileName + ".pdf";
+
+												final File newFile = Utilities.getFile(path);
+												FileUtils.copyFile(file, newFile);
+												// PDF to Images
+												lfiles = Utilities6.generateImageFromPDF(file);
+												final File imgFile = Utilities6.mergeImage(lfiles);
+												final String outputPath = imgFile.getAbsolutePath();
+												if (!lfiles.isEmpty()) {
+													name = Utilities.getAbsolutePath(outputPath);
+													image = Utilities4.getElement(Constant.IMG).attr(Constant.SRC,
+															"file:///" + name);
+													iframeChild.replaceWith(image);
+												}
+												// END PDF to Images
+											}
+											jCounter = jCounter + 1;
+										}
+									}
+								}
+								// FIN PDF
+								final String docHtml = doc.html();
+								final PrintWriter printWriter = new PrintWriter(url1, Constant.UTF8);
+								printWriter.print("");
+								printWriter.print(docHtml);
+								printWriter.close();
+								final String urlStr = new File(url1.getPath()).toURI().toURL().toString();
+								Utilities6.load(webEngine, urlStr);
+								menuBar.setDisable(false);
+								mediator.setWebEngine(webEngine);
+							} catch (final IOException | WriterException e) {
+								if (LOG.isInfoEnabled()) {
+									final String error = e.getMessage();
+									LOG.error(error);
+								}
+							} finally {
+								if (file != null) {
+									file.deleteOnExit();
+								}
+							}
+						});
+						// champs xml ou xsl vide --> error
+
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+				}
+			});
+
 			menuItem2.setOnAction(new EventHandler<>() {
 				@Override
 				public void handle(final ActionEvent event) {
@@ -2245,4 +2424,34 @@ public class WebViewSample extends Application {
 		stage.setMinWidth((double) number2);
 	}
 
+	/**
+	 * 
+	 * @param document
+	 * @throws Exception
+	 */
+	private static Path replaceBodySection(final String inputFilePath) throws Exception {
+		Path xslFilePath = Paths.get(inputFilePath);
+		String content = new String(Files.readAllBytes(xslFilePath));
+		String originalCondition = "]) = 1";
+		String newCondition = "]) = 2";
+		String updatedContent = content.replace(originalCondition, newCondition);
+		Path tempFilePath = Files.createTempFile("updated-xsl-", ".xsl");
+		Files.write(tempFilePath, updatedContent.getBytes());
+		Path sourceFile = Paths.get(new File(inputFilePath).getParent() + "\\cda_l10n.xml");
+		Path sourceFile1 = Paths.get(new File(inputFilePath).getParent() + "\\cda_narrativeblock.xml");
+		Path tempDirectory = Paths.get(System.getProperty("java.io.tmpdir"));
+		Path destinationFile = tempDirectory.resolve(sourceFile.getFileName());
+		try {
+			Files.copy(sourceFile, destinationFile, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Path destinationFile1 = tempDirectory.resolve(sourceFile1.getFileName());
+		try {
+			Files.copy(sourceFile1, destinationFile1, StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return tempFilePath;
+	}
 }
