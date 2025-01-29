@@ -434,6 +434,20 @@ public class WebViewSample extends Application {
 	 */
 	@Override
 	public void start(final Stage stage) {
+
+		final String homeDir = System.getProperty("user.home");
+		final String filePath = homeDir + File.separator + "init.txt";
+		final File fileIni = new File(filePath);
+		try {
+			if (!fileIni.exists()) {
+				fileIni.createNewFile();
+			}
+		} catch (final IOException e) {
+			if (LOG.isInfoEnabled()) {
+				final String error = e.getMessage();
+				LOG.error(error);
+			}
+		}
 		// Start ProgressBar creation
 		final double wndwWidth = 150.0d;
 		final double wndhHeigth = 150.0d;
@@ -571,6 +585,19 @@ public class WebViewSample extends Application {
 			@Override
 			public void handle(final ActionEvent event) {
 				Platform.runLater(() -> {
+					String linee = null;
+					try {
+						final List<String> lines = Files.readAllLines(Paths.get(fileIni.toURI()));
+						for (final String line : lines) {
+							linee = line;
+							break;
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					if (linee != null) {
+						fileChooser.setInitialDirectory(new File(linee));
+					}
 					final File file = fileChooser.showOpenDialog(stage);
 					if (file != null) {
 						fileChoose = file;
@@ -586,6 +613,15 @@ public class WebViewSample extends Application {
 								fileChooserxsl.setInitialDirectory(new File(pathFile));
 							} else {
 								fileChooserxsl.setInitialDirectory(defaultDir);
+							}
+							final File cdaDir = fileChoose.getParentFile();
+							try (FileWriter writer = new FileWriter(fileIni, false)) {
+								writer.write(cdaDir.getAbsolutePath());
+							} catch (final IOException e) {
+								if (LOG.isInfoEnabled()) {
+									final String error = e.getMessage();
+									LOG.error(error);
+								}
 							}
 						}
 						final List<File> files = Arrays.asList(file);
@@ -666,7 +702,6 @@ public class WebViewSample extends Application {
 								}
 							}
 							if (!trouve) {
-								textFieldxsl.clear();
 								xslButton.setDisable(false);
 								textFieldxsl.setDisable(false);
 							}
