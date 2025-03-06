@@ -195,6 +195,10 @@ public class Constant {
 	 */
 	public static final String FULLSCREEN = "images/fullscreen.png";
 	/**
+	 * CDAFILE
+	 */
+	public static final String CDAFILE = "images/cdaF.png";
+	/**
 	 * size
 	 */
 	public static final String SIZE = "images/size.png";
