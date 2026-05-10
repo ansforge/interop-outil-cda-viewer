@@ -2018,7 +2018,6 @@ public class WebViewSample extends Application {
 						root.setSpacing(5);
 						final TextArea textArea = new TextArea();
 						textArea.setEditable(false);
-						;
 						textArea.setPrefHeight(Integer.MAX_VALUE);
 						textArea.setPrefWidth(Integer.MAX_VALUE);
 						final Font font = Font.font("Verdana", FontWeight.NORMAL, FontPosture.REGULAR,
@@ -2170,12 +2169,12 @@ public class WebViewSample extends Application {
 												} else {
 													fileName = "Document" + jCounter;
 												}
-												if (Utilities.getFile(file.getParentFile() + "\\" + fileName + ".pdf")
+												if (Utilities.getFile(file.getParentFile() + File.separator + fileName + ".pdf")
 														.exists()) {
-													Utilities.getFile(file.getParentFile() + "\\" + fileName + ".pdf")
+													Utilities.getFile(file.getParentFile() + File.separator + fileName + ".pdf")
 															.delete();
 												}
-												final String path = file.getParentFile() + "\\" + fileName + ".pdf";
+												final String path = file.getParentFile() + File.separator + fileName + ".pdf";
 
 												final File newFile = Utilities.getFile(path);
 												FileUtils.copyFile(file, newFile);
