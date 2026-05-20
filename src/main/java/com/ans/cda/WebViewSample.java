@@ -329,7 +329,7 @@ public class WebViewSample extends Application {
 	 * @param args
 	 */
 
-	public static void main(final String args[]) {
+	public static void main(final String[] args) {
 		launch(args);
 	}
 
@@ -439,8 +439,8 @@ public class WebViewSample extends Application {
 		final String filePath = homeDir + File.separator + "init.txt";
 		final File fileIni = new File(filePath);
 		try {
-			if (!fileIni.exists()) {
-				fileIni.createNewFile();
+			if (!fileIni.exists() && !fileIni.createNewFile()) {
+				LOG.error("Failed to create file: " + filePath);
 			}
 		} catch (final IOException e) {
 			if (LOG.isInfoEnabled()) {
@@ -897,12 +897,12 @@ public class WebViewSample extends Application {
 											} else {
 												fileName = "Document" + jCounter;
 											}
-											if (Utilities.getFile(file.getParentFile() + "\\" + fileName + ".pdf")
+											if (Utilities.getFile(file.getParentFile() + File.separator + fileName + ".pdf")
 													.exists()) {
-												Utilities.getFile(file.getParentFile() + "\\" + fileName + ".pdf")
+												Utilities.getFile(file.getParentFile() + File.separator + fileName + ".pdf")
 														.delete();
 											}
-											final String path = file.getParentFile() + "\\" + fileName + ".pdf";
+											final String path = file.getParentFile() + File.separator + fileName + ".pdf";
 
 											final File newFile = Utilities.getFile(path);
 											FileUtils.copyFile(file, newFile);
@@ -1012,7 +1012,7 @@ public class WebViewSample extends Application {
 						final String path = file.getAbsolutePath().concat(Constant.PATH_MOTEUR);
 						if (new File(path).exists()) {
 							try {
-								final String command[] = { "java", "-jar", path, textField.getText(),
+								final String[] command = { "java", "-jar", path, textField.getText(),
 										INUtility.getLocale().toLanguageTag() };
 								final ProcessBuilder pbuilder = new ProcessBuilder(command);
 								pbuilder.redirectErrorStream(true);
@@ -1851,7 +1851,7 @@ public class WebViewSample extends Application {
 					comboBox.setCellFactory(new Callback<>() {
 						@Override
 						public ListCell<WebHistory.Entry> call(ListView<WebHistory.Entry> list) {
-							final ListCell<Entry> cell = new ListCell<>() {
+							return new ListCell<>() {
 								@Override
 								public void updateItem(final Entry item, final boolean empty) {
 									super.updateItem(item, empty);
@@ -1872,7 +1872,6 @@ public class WebViewSample extends Application {
 									}
 								}
 							};
-							return cell;
 						}
 					});
 					comboBox.setPadding(new Insets(10, 0, 0, 20));
@@ -2471,8 +2470,8 @@ public class WebViewSample extends Application {
 		String updatedContent = content.replace(originalCondition, newCondition);
 		Path tempFilePath = Files.createTempFile("updated-xsl-", ".xsl");
 		Files.write(tempFilePath, updatedContent.getBytes());
-		Path sourceFile = Paths.get(new File(inputFilePath).getParent() + "\\cda_l10n.xml");
-		Path sourceFile1 = Paths.get(new File(inputFilePath).getParent() + "\\cda_narrativeblock.xml");
+		Path sourceFile = Paths.get(new File(inputFilePath).getParent() + File.separator + "cda_l10n.xml");
+		Path sourceFile1 = Paths.get(new File(inputFilePath).getParent() + File.separator + "cda_narrativeblock.xml");
 		Path tempDirectory = Paths.get(System.getProperty("java.io.tmpdir"));
 		Path destinationFile = tempDirectory.resolve(sourceFile.getFileName());
 		try {
