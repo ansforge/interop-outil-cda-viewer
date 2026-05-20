@@ -11,7 +11,6 @@ import org.fxmisc.richtext.LineNumberFactory;
 import org.fxmisc.richtext.Selection;
 import org.fxmisc.richtext.SelectionImpl;
 
-import com.ans.cda.Handler;
 import com.ans.cda.gui.mediator.Events;
 import com.ans.cda.gui.mediator.IMediator;
 import com.ans.cda.gui.mediator.Mediator;
@@ -35,7 +34,7 @@ public class TextSpace extends HBox {
 	/**
 	 * textSpaceNumber
 	 */
-	public int textSpaceNumber;
+	private int textSpaceNumber;
 	/**
 	 * mediator
 	 */
@@ -64,7 +63,7 @@ public class TextSpace extends HBox {
 	/**
 	 * Logger
 	 */
-	private static final Logger LOG = Logger.getLogger(Handler.class);
+	private static final Logger LOG = Logger.getLogger(TextSpace.class);
 
 	/**
 	 * loads textspace.fxml and specifies the controller and the root
@@ -120,6 +119,10 @@ public class TextSpace extends HBox {
 	 */
 	public void setNumber(final int number) {
 		textSpaceNumber = number;
+	}
+
+	public int getTextSpaceNumber() {
+		return textSpaceNumber;
 	}
 
 	/**

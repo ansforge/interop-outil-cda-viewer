@@ -168,7 +168,7 @@ public final class Handler extends DefaultHandler {
 	 * characters
 	 */
 	@Override
-	public void characters(final char character[], final int start, final int length) throws SAXException {
+	public void characters(final char[] character, final int start, final int length) throws SAXException {
 		textBuffer.append(character, start, length);
 		final String string = String.valueOf(character, start, length).trim();
 		if (!string.isEmpty()) {
