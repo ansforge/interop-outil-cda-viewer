@@ -229,7 +229,7 @@ public class WebViewSample extends Application {
 	/**
 	 * textFieldxsl
 	 */
-	public TextField textFieldxsl = new TextField();
+	private TextField textFieldxsl = new TextField();
 	/**
 	 * primaryStage
 	 */

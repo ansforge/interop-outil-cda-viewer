@@ -366,7 +366,7 @@ public class MainMenuBar extends MenuBar {
 										final int lengthName = nom.length();
 										final String fileName = Utilities7.compareInt(length, lengthName, jCounter, nom,
 												ident);
-										final String path = file.getParentFile() + "\\" + fileName + ".pdf";
+										final String path = file.getParentFile() + File.separator + fileName + ".pdf";
 										if (Utilities.getFile(path).exists()) {
 											Utilities.getFile(path).delete();
 										}
@@ -375,7 +375,7 @@ public class MainMenuBar extends MenuBar {
 										// PDF to Images
 										lfiles = Utilities6.generateImageFromPDF(file);
 										Utilities6.mergeImage(lfiles);
-										final String outputPath = file.getParent().concat("\\merged.png");
+										final String outputPath = file.getParent().concat(File.separator + "merged.png");
 										if (!lfiles.isEmpty()) {
 											name = Utilities.getAbsolutePath(outputPath);
 											image = Utilities4.getElement(Constant.IMG).attr(Constant.SRC,
