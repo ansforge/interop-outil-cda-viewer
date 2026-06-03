@@ -35,13 +35,13 @@ Vous devez télécharger l'outil testContenuCDA publié sur https://github.com/a
 
 ***Télécharger le viewer CDA***
 
-Vous devez télécharger le viewer CDA à partir du projet "interop-viewer-cda" sur GitHub (https://github.com/ansforge/interop-viewer-cda) puis sélectionnez la realese « ANS_Viewer-CDA_2023.01.jar » pour le télécharger.
+Vous devez télécharger le viewer CDA à partir du projet "interop-viewer-cda" sur GitHub (https://github.com/ansforge/interop-viewer-cda) puis sélectionnez la release « ANS_Viewer-CDA_YYYY.MM.jar » pour le télécharger.
 
 **Utilisation du Viewer CDA de l'ANS**
 
 Vous devrez déposer vos documents CDA à visualiser dans le répertoire ExemplesCDA de testContenuCDA. 
 
-Pour ouvrir le Viewer CDA, double cliquez sur ANS_Viewer-CDA_2023.01.jar. 
+Pour ouvrir le Viewer CDA, double cliquez sur ANS_Viewer-CDA_YYYY.MM.jar. 
 
 Vous devez ensuite : 
 
